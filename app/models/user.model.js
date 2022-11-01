@@ -1,40 +1,57 @@
 const mongoose = require("mongoose");
-
-const User = mongoose.model(
+const Schema = mongoose.Schema;
+let User = mongoose.model(
   "User",
   new mongoose.Schema({
     username: {
       type: String,
       unique: true,
       required: true
-      },
+    },
     email: {
       type: String,
-      unique: true,
-      required: true
-      },
+    },
     password: {
       type: String,
       required: true
-      },
-    firstname:{
+    },
+    firstname: {
       type: String,
       required: true
-      },
-    lastname:{
+    },
+    lastname: {
       type: String,
       required: true
-      },
-    address:{
+    },
+    street: {
       type: String,
-        required: true
-      },
+    },
+    nr: {
+      type: String,
+    },
+    plz: {
+      type: String,
+    },
+    ort: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
+    position: {
+      type: String,
+    },
     roles: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Role"
       }
-    ]
+    ],
+    comments: [{
+      comment: { type: String, required: true },
+      created_at: { type: Date, default: Date.now },
+      author: 		{type: Schema.Types.Mixed}
+    }]
   })
 );
 

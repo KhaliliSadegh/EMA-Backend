@@ -1,10 +1,13 @@
 const express = require("express");
 const cors = require("cors");
-const Config = require("./app/config/db.config");
+const Config = require("./app/config/app.config");
 const { appLogger } = require('./utils/logger');
 var bcrypt = require("bcryptjs");
 
 const app = express();
+const db = require("./app/models");
+const Role = db.role;
+const User = db.user;
 
 var corsOptions = {
   origin: "http://localhost:8081"
@@ -18,9 +21,7 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-const db = require("./app/models");
-const Role = db.role;
-const User = db.user;
+
 
 db.mongoose
   .connect(`mongodb://${Config.HOST}:${Config.PORT}/${Config.DB}`, {
@@ -80,29 +81,29 @@ function initial() {
 
       new Role({
         name: "admin"
-      }).save((err,role) => {
+      }).save((err, role) => {
         if (err) {
           console.log("error", err);
         }
         admin_roleid = role._id;
         console.log("added 'admin' to roles collection");
-  const user = new User({
-    username: Config.ADMIN_USERNAME,
-    firstname: Config.ADMIN_NAME,
-    email: Config.ADMIN_EMAIL,
-    lastname:Config.ADMIN_Family,
-    address:Config.ADMIN_Address,
-    password: bcrypt.hashSync(Config.ADMIN_PASSWORD, 8),
-    roles : [admin_roleid]
-  });
-  user.save((err, user) => {
-    if (err) {
-      console.log("error", err);
-      return
-      }
-      appLogger.info("admin user added to users collection");
-    }
-  );
+        const user = new User({
+          username: Config.ADMIN_USERNAME,
+          firstname: Config.ADMIN_NAME,
+          email: Config.ADMIN_EMAIL,
+          lastname: Config.ADMIN_Family,
+          position: Config.ADMIN_POSITION,
+          password: bcrypt.hashSync(Config.ADMIN_PASSWORD, 8),
+          roles: [admin_roleid]
+        });
+        user.save((err, user) => {
+          if (err) {
+            console.log("error", err);
+            return
+          }
+          appLogger.info("admin user added to users collection");
+        }
+        );
       });
     }
   });

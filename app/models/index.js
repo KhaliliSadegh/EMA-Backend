@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
-const db = {};
+var db = {};
 
 db.mongoose = mongoose;
 

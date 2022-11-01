@@ -1,4 +1,4 @@
-const config = require("../config/auth.config");
+const {jwt_secret} = require("../config/app.config.js");
 const { appLogger, userActionLogger } = require('../../utils/logger');
 const db = require("../models");
 const User = db.user;
@@ -14,9 +14,13 @@ exports.signup = (req, res) => {
     password: bcrypt.hashSync(req.body.password, 8),
     firstname:req.body.firstname,
     lastname:req.body.lastname,
-    address:req.body.address
+    street:req.body.street,
+    nr:req.body.nr,
+    plz:req.body.plz,
+    ort:req.body.ort,
+    country:req.body.country,
+    position:req.body.position,
   });
-  appLogger.info(req.body.roles)
   user.save((err, user) => {
     if (err) {
       res.status(500).send({ message: err });
@@ -55,10 +59,11 @@ exports.signup = (req, res) => {
         user.roles = [role._id];
         user.save(err => {
           if (err) {
+            appLogger.error('user insertion failed'+req.body)
             res.status(500).send({ message: err });
             return;
           }
-
+          appLogger.info('Below User Registered Succesfully'+req.body)
           res.send({ message: "User was registered successfully!" });
         });
       });
@@ -93,7 +98,7 @@ exports.signin = (req, res) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id }, jwt_secret, {
         expiresIn: 86400 // 24 hours
       });
 
@@ -107,7 +112,8 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         roles: authorities,
-        accessToken: token
+        accessToken: token,
+        fullname:user.firstname+' '+user.lastname
       });
     });
 };
